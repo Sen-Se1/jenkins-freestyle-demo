@@ -2,9 +2,10 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME     = 'jenkins-freestyle-demo'
-        CONTAINER_NAME = 'jenkins-freestyle-demo'
-        HOST_PORT      = '8081'
+        IMAGE_NAME     = 'jenkins-demo'
+        CONTAINER_NAME = 'jenkins-demo'
+        CONTAINER_PORT = '2222'
+        HOST_PORT      = '2222'
     }
 
     stages {
@@ -42,6 +43,22 @@ pipeline {
                 }
             }
         }
+
+
+        stage('Build Docker Image') {
+            steps {
+                step([
+                    $class: 'DockerBuilderPublisher',
+                    dockerFileDirectory: '.',
+                    tagsString: "${IMAGE_NAME}:${BUILD_NUMBER}",
+                    cloud: 'docker',
+                    pushOnSuccess: false,
+                    cleanImages: false,
+                    cleanupWithJenkinsJobDelete: false
+                ])
+            }
+        }
+
 
 
     }
