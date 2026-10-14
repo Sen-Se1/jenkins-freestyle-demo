@@ -1,33 +1,44 @@
-node {
-    def mvnHome = tool 'Maven-3.10.0'
-    def dockerImage
-    def dockerImageTag = "devopsexample:${env.BUILD_NUMBER}"
 
-    stage('Clone Repo') {
-        git branch: 'main',
-            url: 'https://github.com/Sen-Se1/jenkins-freestyle-demo.git'
+pipeline {
+    agent any
+
+    tools {
+        maven 'Maven-3.10.0'
     }
 
-    stage('Build Project') {
-        sh "\"${mvnHome}/bin/mvn\" clean package"
+    environment {
+        IMAGE_NAME = 'devopsexample'
+        IMAGE_TAG = "devopsexample:${BUILD_NUMBER}"
     }
 
-    stage('Initialize Docker') {
-        // Docker CLI is already installed on the Ubuntu VM.
-        sh 'docker --version'
-    }
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/Sen-Se1/jenkins-freestyle-demo.git'
+            }
+        }
 
-    stage('Build Docker Image') {
-        sh "docker build -t ${dockerImageTag} ."
-    }
+        stage('Build Project') {
+            steps {
+                withMaven(maven: 'Maven-3.10.0') {
+                    bat 'mvn clean package'
+                }
+            }
+        }
 
-    stage('Deploy Docker Image') {
-        echo "Docker Image Tag Name: ${dockerImageTag}"
+        stage('Build Docker Image') {
+            steps {
+                docker.build("${IMAGE_TAG}")
+            }
+        }
 
-        sh """
-            docker rm -f devopsexample || true
-            docker run --name devopsexample \
-                -d -p 2222:2222 ${dockerImageTag}
-        """
+        stage('Deploy Container') {
+            steps {
+                docker.image("${IMAGE_TAG}").run(
+                    '--name devopsexample -p 2222:2222'
+                )
+            }
+        }
     }
 }
