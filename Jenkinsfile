@@ -2,15 +2,13 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven-3.10.0'
-    }
-
     stages {
-        stage('Test Maven Plugin') {
+        stage('Test Docker Plugin') {
             steps {
-                withMaven(maven: 'Maven-3.10.0') {
-                    echo 'Maven plugin configured successfully!'
+                withDockerServer('unix:///var/run/docker.sock') {
+                    withDockerRegistry(credentialsId: '', url: '') {
+                        echo 'Docker Pipeline plugin is available!'
+                    }
                 }
             }
         }
