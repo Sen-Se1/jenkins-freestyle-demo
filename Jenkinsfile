@@ -3,12 +3,15 @@ pipeline {
     agent any
 
     stages {
-        stage('Test Docker Plugin') {
+        stage('Test Docker Cloud') {
             steps {
                 withDockerServer(
-                    [uri: 'unix:///var/run/docker.sock', credentialsId: '']
+                    [
+                        uri: 'unix:///var/run/docker.sock',
+                        credentialsId: ''
+                    ]
                 ) {
-                    echo 'Docker Pipeline plugin step is working!'
+                    echo 'Docker server configured successfully!'
                 }
             }
         }
