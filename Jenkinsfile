@@ -1,8 +1,6 @@
 
 pipeline {
-    agent {
-        label 'docker-agent'
-    }
+    agent any
 
     environment {
         IMAGE_NAME     = 'jenkins-demo'
