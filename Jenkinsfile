@@ -27,18 +27,6 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
-            steps {
-                docker.build("${IMAGE_TAG}")
-            }
-        }
 
-        stage('Deploy Container') {
-            steps {
-                docker.image("${IMAGE_TAG}").run(
-                    '--name devopsexample -p 2222:2222'
-                )
-            }
-        }
     }
 }
