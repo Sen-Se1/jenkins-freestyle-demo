@@ -24,5 +24,15 @@ pipeline {
             }
         }
 
-        
+
+    }
+
+    post {
+        success {
+            echo 'All pipeline stages completed.'
+        }
+        failure {
+            echo 'Pipeline failed. Check the Console Output.'
+        }
+    }
 }
