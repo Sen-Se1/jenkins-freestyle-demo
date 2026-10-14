@@ -18,9 +18,17 @@ pipeline {
 
         stage('Build Project') {
             steps {
-                build job: 'maven-build-job',
-                    wait: true,
-                    propagate: true
+                withMaven(maven: 'Maven-3.10.0') {
+                    sh 'mvn -B clean package'
+                }
+            }
+            post {
+                success {
+                    archiveArtifacts(
+                        artifacts: 'target/devOpsDemo-0.0.1-SNAPSHOT.jar',
+                        fingerprint: true
+                    )
+                }
             }
         }
 
