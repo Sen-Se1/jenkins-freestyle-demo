@@ -2,17 +2,16 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven-3.10.0'
+    }
+
     stages {
-        stage('Test Git Plugin') {
+        stage('Test Maven Plugin') {
             steps {
-                git branch: 'main',
-                    url: 'https://github.com/Sen-Se1/jenkins-freestyle-demo.git'
-
-                echo 'Git plugin executed successfully!'
-
-                echo "Workspace: ${WORKSPACE}"
-
-                echo "Build number: ${BUILD_NUMBER}"
+                withMaven(maven: 'Maven-3.10.0') {
+                    echo 'Maven plugin configured successfully!'
+                }
             }
         }
     }
