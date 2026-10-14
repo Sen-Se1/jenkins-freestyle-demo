@@ -32,6 +32,17 @@ pipeline {
             }
         }
 
+        stage('Initialize Docker') {
+            steps {
+                withDockerServer([
+                    uri: 'unix:///var/run/docker.sock',
+                    credentialsId: ''
+                ]) {
+                    echo 'Docker server initialized successfully!'
+                }
+            }
+        }
+
 
     }
 
