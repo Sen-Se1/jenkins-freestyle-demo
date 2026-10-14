@@ -5,10 +5,10 @@ pipeline {
     stages {
         stage('Test Docker Plugin') {
             steps {
-                withDockerServer('unix:///var/run/docker.sock') {
-                    withDockerRegistry(credentialsId: '', url: '') {
-                        echo 'Docker Pipeline plugin is available!'
-                    }
+                withDockerServer(
+                    [uri: 'unix:///var/run/docker.sock', credentialsId: '']
+                ) {
+                    echo 'Docker Pipeline plugin step is working!'
                 }
             }
         }
