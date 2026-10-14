@@ -24,44 +24,5 @@ pipeline {
             }
         }
 
-        stage('Initialize Docker') {
-            steps {
-                withDockerServer([uri: 'unix:///var/run/docker.sock']) {
-                    echo 'Docker server endpoint configured successfully.'
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    withDockerServer([uri: 'unix:///var/run/docker.sock']) {
-                        dockerImage = docker.build("${IMAGE_NAME}:${BUILD_NUMBER}")
-                        dockerImage.tag('latest')
-                    }
-                }
-            }
-        }
-
-        stage('Deploy Docker Image') {
-            steps {
-                script {
-                    withDockerServer([uri: 'unix:///var/run/docker.sock']) {
-                        sh "docker rm -f ${CONTAINER_NAME} || true"
-                        docker.image("${IMAGE_NAME}:latest")
-                              .run("--name ${CONTAINER_NAME} -p ${HOST_PORT}:8080")
-                    }
-                }
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'All pipeline stages completed.'
-        }
-        failure {
-            echo 'Pipeline failed. Check the Console Output.'
-        }
-    }
+        
 }
