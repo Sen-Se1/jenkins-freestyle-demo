@@ -1,8 +1,5 @@
-
 pipeline {
-    agent {
-        label 'docker-agent'
-    }
+    agent any
 
     environment {
         IMAGE_NAME     = 'jenkins-demo'
@@ -16,6 +13,7 @@ pipeline {
             steps {
                 git branch: 'main',
                     url: 'https://github.com/Sen-Se1/jenkins-freestyle-demo.git'
+                echo 'Repository cloned successfully!'
             }
         }
 
@@ -35,10 +33,24 @@ pipeline {
             }
         }
 
+        stage('Initialize Docker') {
+            steps {
+                withDockerServer([
+                    uri: 'unix:///var/run/docker.sock',
+                    credentialsId: ''
+                ]) {
+                    echo 'Docker server initialized successfully!'
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${IMAGE_NAME}:latest")
+                    def appImage = docker.build(
+                        "${IMAGE_NAME}:latest"
+                    )
+                    echo "Docker image built: ${IMAGE_NAME}:latest"
                 }
             }
         }
@@ -47,9 +59,9 @@ pipeline {
             steps {
                 script {
                     docker.image("${IMAGE_NAME}:latest").run(
-                        "-d --name ${CONTAINER_NAME} " +
-                        "-p ${HOST_PORT}:${CONTAINER_PORT}"
+                        "-d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT}"
                     )
+                    echo "Docker container ${CONTAINER_NAME} started successfully!"
                 }
             }
         }
@@ -57,7 +69,7 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo 'All pipeline stages completed.'
         }
         failure {
             echo 'Pipeline failed. Check the Console Output.'
